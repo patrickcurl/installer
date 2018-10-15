@@ -1,6 +1,6 @@
 {
-    "name": "laravel/installer",
-    "description": "Laravel application installer.",
+    "name": "patrickcurl/laravel-installer",
+    "description": "Laravel application installer, with models directory.",
     "keywords": ["laravel"],
     "license": "MIT",
     "authors": [
