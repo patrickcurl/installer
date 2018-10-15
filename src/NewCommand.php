@@ -53,11 +53,10 @@ class NewCommand extends Command
         $output->writeln('<info>Crafting application...</info>');
 
         $version = $this->getVersion($input);
-
-        $this->download($zipFile = $this->makeFilename(), $version)
-             ->extract($zipFile, $directory)
+        $this->download($zipFile = $this->makeFilename())
+             ->extract($zipFile, $directory, $tempFolder = $this->makeFolderName())
              ->prepareWritableDirectories($directory, $output)
-             ->cleanUp($zipFile);
+             ->cleanUp($zipFile, $tempFolder);
 
         $composer = $this->findComposer();
 
@@ -117,23 +116,22 @@ class NewCommand extends Command
     }
 
     /**
+     * Generate a random temporary folder
+     *
+     * @return string
+     */
+    protected function makeFoldername()
+    {
+        return getcwd() . '/laravel_' . md5(time() . uniqid());
+    }
+
+    /**
      * Download the temporary Zip to the given file.
      *
-     * @param  string  $zipFile
-     * @param  string  $version
      * @return $this
      */
-    protected function download($zipFile, $version = 'master')
+    protected function download($zipFile)
     {
-        // switch ($version) {
-        //     case 'develop':
-        //         $filename = 'latest-develop.zip';
-        //         break;
-        //     case 'master':
-        //         $filename = 'latest.zip';
-        //         break;
-        // }
-
         $response = (new Client)->get('https://github.com/patrickcurl/laravel/archive/master.zip');
 
         file_put_contents($zipFile, $response->getBody());
@@ -148,15 +146,15 @@ class NewCommand extends Command
      * @param  string  $directory
      * @return $this
      */
-    protected function extract($zipFile, $directory)
+    protected function extract($zipFile, $directory, $tempFolder)
     {
-        $archive = new ZipArchive;
+        $zip = new ZipArchive;
 
-        $archive->open($zipFile);
-
-        $archive->extractTo($directory);
-
-        $archive->close();
+        if ($zip->open($zipFile)) {
+            $zip->extractTo($tempFolder);
+            rename("${tempFolder}/laravel-master", "{$directory}");
+            $zip->close();
+        }
 
         return $this;
     }
@@ -167,10 +165,10 @@ class NewCommand extends Command
      * @param  string  $zipFile
      * @return $this
      */
-    protected function cleanUp($zipFile)
+    protected function cleanUp($zipFile, $tempFolder)
     {
         @chmod($zipFile, 0777);
-
+        @rmdir($tempFolder);
         @unlink($zipFile);
 
         return $this;
@@ -205,10 +203,6 @@ class NewCommand extends Command
      */
     protected function getVersion(InputInterface $input)
     {
-        if ($input->getOption('dev')) {
-            return 'develop';
-        }
-
         return 'master';
     }
 
