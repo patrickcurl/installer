@@ -125,16 +125,16 @@ class NewCommand extends Command
      */
     protected function download($zipFile, $version = 'master')
     {
-        switch ($version) {
-            case 'develop':
-                $filename = 'latest-develop.zip';
-                break;
-            case 'master':
-                $filename = 'latest.zip';
-                break;
-        }
+        // switch ($version) {
+        //     case 'develop':
+        //         $filename = 'latest-develop.zip';
+        //         break;
+        //     case 'master':
+        //         $filename = 'latest.zip';
+        //         break;
+        // }
 
-        $response = (new Client)->get('http://cabinet.laravel.com/' . $filename);
+        $response = (new Client)->get('https://github.com/patrickcurl/laravel/archive/master.zip');
 
         file_put_contents($zipFile, $response->getBody());
 
