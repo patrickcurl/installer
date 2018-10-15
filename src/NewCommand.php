@@ -27,7 +27,7 @@ class NewCommand extends Command
             ->setName('new')
             ->setDescription('Create a new Laravel application')
             ->addArgument('name', InputArgument::OPTIONAL)
-            ->addOption('dev', null, InputOption::VALUE_NONE, 'Installs the latest "development" release')
+            // ->addOption('dev', null, InputOption::VALUE_NONE, 'Installs the latest "development" release')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Forces install even if the directory already exists');
     }
 
@@ -40,13 +40,13 @@ class NewCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (! class_exists('ZipArchive')) {
+        if (!class_exists('ZipArchive')) {
             throw new RuntimeException('The Zip PHP extension is not installed. Please install it and try again.');
         }
 
-        $directory = ($input->getArgument('name')) ? getcwd().'/'.$input->getArgument('name') : getcwd();
+        $directory = ($input->getArgument('name')) ?getcwd() . '/' . $input->getArgument('name') : getcwd();
 
-        if (! $input->getOption('force')) {
+        if (!$input->getOption('force')) {
             $this->verifyApplicationDoesntExist($directory);
         }
 
@@ -62,21 +62,21 @@ class NewCommand extends Command
         $composer = $this->findComposer();
 
         $commands = [
-            $composer.' install --no-scripts',
-            $composer.' run-script post-root-package-install',
-            $composer.' run-script post-create-project-cmd',
-            $composer.' run-script post-autoload-dump',
+            $composer . ' install --no-scripts',
+            $composer . ' run-script post-root-package-install',
+            $composer . ' run-script post-create-project-cmd',
+            $composer . ' run-script post-autoload-dump'
         ];
 
         if ($input->getOption('no-ansi')) {
             $commands = array_map(function ($value) {
-                return $value.' --no-ansi';
+                return $value . ' --no-ansi';
             }, $commands);
         }
 
         if ($input->getOption('quiet')) {
             $commands = array_map(function ($value) {
-                return $value.' --quiet';
+                return $value . ' --quiet';
             }, $commands);
         }
 
@@ -113,7 +113,7 @@ class NewCommand extends Command
      */
     protected function makeFilename()
     {
-        return getcwd().'/laravel_'.md5(time().uniqid()).'.zip';
+        return getcwd() . '/laravel_' . md5(time() . uniqid()) . '.zip';
     }
 
     /**
@@ -134,7 +134,7 @@ class NewCommand extends Command
                 break;
         }
 
-        $response = (new Client)->get('http://cabinet.laravel.com/'.$filename);
+        $response = (new Client)->get('http://cabinet.laravel.com/' . $filename);
 
         file_put_contents($zipFile, $response->getBody());
 
@@ -188,8 +188,8 @@ class NewCommand extends Command
         $filesystem = new Filesystem;
 
         try {
-            $filesystem->chmod($appDirectory.DIRECTORY_SEPARATOR."bootstrap/cache", 0755, 0000, true);
-            $filesystem->chmod($appDirectory.DIRECTORY_SEPARATOR."storage", 0755, 0000, true);
+            $filesystem->chmod($appDirectory . DIRECTORY_SEPARATOR . "bootstrap/cache", 0755, 0000, true);
+            $filesystem->chmod($appDirectory . DIRECTORY_SEPARATOR . "storage", 0755, 0000, true);
         } catch (IOExceptionInterface $e) {
             $output->writeln('<comment>You should verify that the "storage" and "bootstrap/cache" directories are writable.</comment>');
         }
@@ -219,8 +219,8 @@ class NewCommand extends Command
      */
     protected function findComposer()
     {
-        if (file_exists(getcwd().'/composer.phar')) {
-            return '"'.PHP_BINARY.'" composer.phar';
+        if (file_exists(getcwd() . '/composer.phar')) {
+            return '"' . PHP_BINARY . '" composer.phar';
         }
 
         return 'composer';

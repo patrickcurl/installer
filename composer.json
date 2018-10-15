@@ -7,6 +7,10 @@
         {
             "name": "Taylor Otwell",
             "email": "taylorotwell@gmail.com"
+        },
+        {   
+            "name": "Patrick Curl",
+            "email": "patrickwcurl@gmail.com"
         }
     ],
     "autoload": {
