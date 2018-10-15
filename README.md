@@ -10,6 +10,6 @@ installation:
 
 ```composer global remove laravel/installer```
 
-```composer global require patrickcurl/laravel-installer```
+```composer global require patrickcurl/laravel-installer:dev-master```
 
 ```laravel new test```
